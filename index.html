@@ -1,0 +1,81 @@
+<html>
+
+	
+	<head>
+		<script src="js/Particle.js"></script>
+		<script src="js/AudioLoader.js"></script>
+		<script src="js/AudioAnalyzer.js"></script>
+		<script src="js/AudioPlayer.js"></script>
+		<script src="js/CanvasAnimator.js"></script>
+	</head>
+
+
+	<body>
+		<canvas></canvas>
+	</body>
+
+
+	<style>
+		body{
+			margin: 0;
+		}
+		canvas{
+			width: 100%;
+			height: 100%;
+			background: black;
+		}
+	</style>
+
+
+	<script>
+
+		// globa vars 
+		context = new webkitAudioContext();
+ 		canvas = document.querySelector('canvas');
+		ctx = canvas.getContext('2d');
+		
+		var canvasAnimator = new CanvasAnimator2();
+
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		(function manageAudio(){
+			
+			var songURL = "http://upload.wikimedia.org/wikipedia/en/1/17/Pendulum_Tarantula.ogg";
+
+			var audioLoader = new AudioLoader(); 
+			
+			audioLoader.load(songURL, onAudioLoaded);
+
+			function onAudioLoaded(buffer){
+				
+				var audioPlayer = new AudioPlayer();
+				audioAnalyzer = new AudioAnalyzer();
+				
+				audioPlayer.play( buffer, audioAnalyzer.analyzer );
+
+				frequncies = 16;
+
+				canvasAnimator.maxParticles = frequncies;
+				canvasAnimator.birthRate = frequncies;
+
+				draw();
+			}
+			
+		})();
+
+		function draw(){
+
+			var soundSpectrum = audioAnalyzer.analyze(frequncies);
+
+			canvasAnimator.draw(ctx, soundSpectrum);
+
+			requestAnimationFrame(draw);
+
+		};
+
+
+	</script>
+
+
+</html>
